@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}Simple is Better Than Complex{% endblock %}</title>
+  </head>
+  <body>
+
+    <main>
+      {% block content %}
+      <div>
+              {% if user.is_authenticated %}
+              {{ user.username}}
+
+              {% endif %}
+            </div>
+      {% endblock %}
+    </main>
+  </body>
+</html>
