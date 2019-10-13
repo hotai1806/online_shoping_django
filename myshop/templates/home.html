@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+{% for item in object_list %}
+
+  <h5>{{ item.get_category_display }}</h5>
+  <strong>
+                    <a href="{{ item.get_absolute_url }}">{{ item.title }}
+                      <span class=" {{ item.get_label_display }}">NEW</span>
+                    </a>
+                  </strong>
+{% endfor %}
+{% endblock %}
