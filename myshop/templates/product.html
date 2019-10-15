@@ -1,10 +1,14 @@
 {% extends "base.html" %}
-
+{% load static from staticfiles %}
 {% block content %}
 
 {{ object.price }}
 
-<img src="{{ object.image}}" alt="Smiley face" >
+<img src="{{ item.image.url }}" alt="Smiley face" >
+
+<img src="{{ item.image }}" alt="Smiley face" >
+<h1> {{ item.image.url }}</h1>
+<h2> {{ object.image }}</h2>
 {% endblock content %}
 <p">Description</p>
 
