@@ -1,9 +1,10 @@
-{% extends 'base.html' %}
-{% block content %}
-<h2>Login</h2>
-<form method="post">
+<!DOCTYPE html>
+{% load staticfiles %}
+
+<form class="login-form"  method="post">
   {% csrf_token %}
-  {{ form.as_p }}
+  {{form.as_p}}
+
   <button type="submit">Login</button>
+  <p class="message">Not registered? <a href="#">Create an account</a></p>
 </form>
-{% endblock %}

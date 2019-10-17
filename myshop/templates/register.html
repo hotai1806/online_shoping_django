@@ -2,33 +2,33 @@
 <head>
   <meta charset="utf-8">
   <title>Register</title>
-  
+
 </head>
 
 {% block content %}
-  <h2>Sign up</h2>
   <div class="login-page">
         {% csrf_token %}
         <div class="login-page">
           <div class="form">
-            <form class="register-form" method="POST">
-                {% csrf_token %}
-              <input type="text" placeholder="Name" />
-              <input type="password" placeholder="Password" />
-              <input type="password" placeholder="Confirm Password" />
-              <input type="email" placeholder="Email address" />
-              <button type="submit">create</button>
+            <form class="register-form"  method="POST">
+              {% csrf_token %}
+              <input type="text" name="username"  placeholder="Name" maxlength="150" autofocus="" required="" id="id_username">
+              <input type="email" name="email" placeholder="Email address" required="" id="id_email">
+              <input type="password" name="password1" placeholder="Password" required="" id="id_password1">
+              <input type="password" name="password2" placeholder="Confirm Password required="" id="id_password2">
+              <button name="registerbtn" type="submit">create</button>
               <p class="message">Already registered? <a href="#">Sign In</a></p>
             </form>
-            <form class="login-form">
-              <input type="text" placeholder="username" />
-              <input type="password" placeholder="password" />
-              <button type="submit">login</button>
+            <form class="login-form"  method="POST">
+              {% csrf_token %}
+              <input type="text" name="username"  placeholder="username" id='username' />
+              <input type="password" name="password" placeholder="password" id='password'/>
+              <button name="loginbtn" type="submit">login</button>
               <p class="message">Not registered? <a href="#">Create an account</a></p>
             </form>
           </div>
         </div>
-        
+
       </form>
   </div>
 {% endblock %}
