@@ -1,6 +1,124 @@
-{% extends "base.html" %}
-{% block content %}
-{% for item in object_list %}
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}Simple is Better Than Complex{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/StoreStyle.css' %}">
+    <link rel="stylesheet" type="text/JavaScript" href="{% static 'js/jquery.min.js' %}">
+    <link rel="stylesheet" type="text/JavaScript" href="{% static 'js/jquery.livequery.js' %}">
+</head>
+
+<body>
+	<div class="top-header">
+		<div class="wrap">
+			<!----start-logo---->
+			<div class="logo">
+				<a href="index.html"><img src="images/logo.png" title="logo" /></a>
+			</div>
+			<!----end-logo---->
+			<!----start-top-nav---->
+			<div class="top-nav">
+				<ul>
+					<li><a href="store.html" class="scroll">Store</a></li>
+					<li><a href="#about">About</a></li>
+					<li><a href="{% url 'register' %}">register</a></li>
+					<li><a href="#"><span>shopping cart: 0</span></a></li>
+				</ul>
+			</div>
+			<div class="clear"> </div>
+		</div>
+	</div>
+
+
+  <div class="wrap">
+		<div class="content">
+			<div class="content-grids">
+        {% for item in object_list %}
+				<div id="wrap">
+          <img src="{{ item.image.url }}" class="items" alt="" />
+          <br clear="all" />
+          <div>{{ item.title }}</div>
+
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="content-sidebar">
+			<h4>Categories</h4>
+			<ul>
+				<li><a href="#">Accord Mobiles</a></li>
+				<li><a href="#">Ace Mobile</a></li>
+				<li><a href="#">Acer Mobile</a></li>
+				<li><a href="#">Airfone</a></li>
+				<li><a href="#">Apple</a></li>
+				<li><a href="#">Blackberry</a></li>
+				<li><a href="#">Byond Tech</a></li>
+				<li><a href="#">Celkon Mobiles</a></li>
+				<li><a href="#">Dell Mobile Phones </a></li>
+				<li><a href="#">Fly Mobile</a></li>
+				<li><a href="#">Fujezone Mobiles </a></li>
+				<li><a href="#">HTC</a></li>
+				<li><a href="#">LG Mobiles</a></li>
+				<li><a href="#">Longtel Mobile</a></li>
+				<li><a href="#">Maxx</a></li>
+				<li><a href="#">Micromax Mobiles </a></li>
+				<li><a href="#">Samsung Mobiles</a></li>
+				<li><a href="#">Sony Ericsson Mobiles</a></li>
+				<li><a href="#">Wynncom Mobiles</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="clear"> </div>
+	</div>
+	<div class="footer">
+		<div class="wrap">
+			<div class="section group">
+				<div class="col_1_of_4 span_1_of_4">
+					<h3>Our Info</h3>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, quis nostrud exercitation ullamco
+						laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
+						voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+				</div>
+				<div class="col_1_of_4 span_1_of_4">
+					<h3>Latest-News</h3>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+				</div>
+				<div class="col_1_of_4 span_1_of_4">
+					<h3>Store Location</h3>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+					<h3>Order-online</h3>
+					<p>080-1234-56789</p>
+					<p>080-1234-56780</p>
+				</div>
+				<div class="col_1_of_4 span_1_of_4 footer-lastgrid">
+					<h3>News-Letter</h3>
+					<form>
+						<input type="text"><input type="submit" value="go" />
+					</form>
+					<h3>Follow Us:</h3>
+					<ul>
+						<li><a href="#"><img src="images/twitter.png" title="twitter" />Twitter</a></li>
+						<li><a href="#"><img src="images/facebook.png" title="Facebook" />Facebook</a></li>
+						<li><a href="#"><img src="images/rss.png" title="Rss" />Rss</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="clear"> </div>
+		<div class="wrap">
+			<div class="copy-right">
+				<p>&copy; 2013 Mobile Store. All Rights Reserved | Design by <a
+						href="http://w3layouts.com/">W3Layouts</a></p>
+			</div>
+		</div>
+	</div>
+
+</body>
+<!-- {% for item in object_list %}
 
   <h5>{{ item.get_category_display }}</h5>
   <strong>
@@ -15,7 +133,6 @@
   <p>You are not logged in</p>
   <a href="{% url 'login' %}">login</a>
   <a href="{% url 'register' %}">register</a>
-{% endif %}                
-                
-{% endfor %}
-{% endblock %}
+{% endif %}
+
+{% endfor %} -->

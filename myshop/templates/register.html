@@ -1,8 +1,18 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+{% load staticfiles %}
 <head>
   <meta charset="utf-8">
   <title>Register</title>
+  <link rel="stylesheet" type="text/css" href="{% static 'css/Style2.css' %}" />
 
+  <!-- <script src="{% static 'js/slide.js' %}"></script>  -->
+ </head>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script>$(document).ready(function () {
+  $('.message a').click(function () {
+      $('form').animate({ height: "toggle", opacity: "toggle" }, "slow");
+  });
+});</script>
 </head>
 
 {% block content %}

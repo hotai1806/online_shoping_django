@@ -9,6 +9,12 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.TextField(max_length=500, blank=True)
     location = models.CharField(max_length=30, blank=True)
+    stripe_customer_id = models.CharField(max_length=50, blank=True, null=True)
+    one_click_purchasing = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.user.username
+
 
 class Item(models.Model):
     title = models.CharField(max_length=100)
@@ -52,8 +58,8 @@ class OrderItem(models.Model):
     def get_total_item_price(self):
         return self.quantity * self.item.price
 
-    def get_total_discount_item_price(self):
-        return self.quantity * self.item.discount_price
+    # def get_total_discount_item_price(self):
+    #     return self.quantity * self.item.discount_price
 
     def get_amount_saved(self):
         return self.get_total_item_price() - self.get_total_discount_item_price()

@@ -9,6 +9,24 @@
 <img src="{{ item.image }}" alt="Smiley face" >
 <h1> {{ item.image.url }}</h1>
 <h2> {{ object.image }}</h2>
+<div >
+
+     <a href="{{ object.get_add_to_cart_url }}" >
+       add to cart
+     </a>
+
+</div>
+<div >
+
+     <a href="{{ object.get_remove_from_cart_url }}" >
+       remove
+     </a>
+
+</div>
+get_remove_from_cart_url
+
+
+
 {% endblock content %}
 <p">Description</p>
 
