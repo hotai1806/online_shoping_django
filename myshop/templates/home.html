@@ -30,21 +30,38 @@
 		</div>
 	</div>
 
+{% block extrabody %}
 
   <div class="wrap">
 		<div class="content">
 			<div class="content-grids">
-        {% for item in object_list %}
+
 				<div id="wrap">
-          <img src="{{ item.image.url }}" class="items" alt="" />
-          <br clear="all" />
-          <div>{{ item.title }}</div>
+          <script>
+          var i = 1
+          </script>
+          <ul>
+            {% for item in object_list %}
+
+            <li id = "i" >
+              <a href="{{ item.get_absolute_url }}">
+              <img height="30%" width="60%" src="{{ item.image.url }}" class="items" alt="" />
+              <br clear="all" />
+              <div>{{ item.title }}</div>
+              <script>
+               i += 1
+              </script>
+            </li>
+            {% endfor %}
+          </ul>
+
 
         </div>
-        {% endfor %}
+
       </div>
     </div>
   </div>
+  {% endblock }
   <div class="content-sidebar">
 			<h4>Categories</h4>
 			<ul>

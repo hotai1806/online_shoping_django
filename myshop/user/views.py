@@ -5,7 +5,7 @@ from django.views.generic import ListView, DetailView, View
 # Create your views here.
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegisterForm
+from .forms import UserRegisterForm, CheckoutForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login
 from .models import Item , OrderItem, Order
@@ -15,6 +15,11 @@ def products(request):
         'items': Item.objects.all()
     }
     return render(request, "products.html", context)
+
+
+
+
+
 
 # def register(request):
 #     if request.method == 'POST':
@@ -115,6 +120,7 @@ def remove_from_cart(request, slug):
     else:
         messages.info(request, "You do not have an active order")
         return redirect("user:product", slug=slug)
+
 
 
 
