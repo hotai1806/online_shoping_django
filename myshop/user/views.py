@@ -8,7 +8,14 @@ from django.contrib.auth.decorators import login_required
 from .forms import UserRegisterForm, CheckoutForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login
-from .models import Item , OrderItem, Order
+from .models import Item , OrderItem, Order, Profile, Address, Payment
+
+import random
+import string
+
+def create_ref_code():
+    return ''.join(random.choices(string.ascii_lowercase + string.digits, k=20))
+
 
 def products(request):
     context = {
@@ -16,23 +23,112 @@ def products(request):
     }
     return render(request, "products.html", context)
 
+def is_valid_form(values):
+    valid = True
+    for field in values:
+        if field == '':
+            valid = False
+    return valid
+
+class CheckoutView(View):
+    def get(self, *args, **kwargs):
+        try:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            form = CheckoutForm()
+            context = {
+                'form': form,
+                'order': order,
+            }
+
+            shipping_address_qs = Address.objects.filter(
+                user=self.request.user,
+                default=True
+            )
+            if shipping_address_qs.exists():
+                context.update(
+                    {'default_shipping_address': shipping_address_qs[0]})
+            return render(self.request, "checkout.html", context)
+        except ObjectDoesNotExist:
+            messages.info(self.request, "You do not have an active order")
+            return redirect("user:checkout")
+
+    def post(self, *args, **kwargs):
+        form = CheckoutForm(self.request.POST or None)
+        try:
+            userprofile = Profile.objects.get(user=self.request.user)
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            if form.is_valid():
+
+                use_default_shipping = form.cleaned_data.get(
+                    'use_default_shipping')
+                if use_default_shipping:
+                    print("Using the defualt shipping address")
+                    address_qs = Address.objects.filter(
+                        user=self.request.user,
+                        default=True
+                    )
+                    if address_qs.exists():
+                        shipping_address = address_qs[0]
+                        order.shipping_address = shipping_address
+                        order.save()
+                    else:
+                        messages.info(
+                            self.request, "No default shipping address available")
+                        return redirect('user:checkout')
+                else:
+                    print("User is entering a new shipping address")
+                    shipping_address1 = form.cleaned_data.get(
+                        'shipping_address')
+
+
+                    if is_valid_form([shipping_address1]):
+                        shipping_address = Address(
+                            user=self.request.user,
+                            street_address=shipping_address1,
+                        )
+                        shipping_address.default = True
+                        shipping_address.save()
+
+                        order.shipping_address = shipping_address
+                        order.save()
 
 
 
+                    else:
+                        messages.info(
+                            self.request, "Please fill in the required shipping address fields")
+                #total amount
+                # amount = int(order.get_total() * 100)
+                userprofile.one_click_purchasing = True
+                userprofile.name_profile = form.cleaned_data.get('name_profile')
+                userprofile.numberphone = form.cleaned_data.get('numberphone')
+                userprofile.save()
 
 
-# def register(request):
-#     if request.method == 'POST':
-#         form = UserRegisterForm(request.POST)
-#         if form.is_valid():
-#             user = form.save()
-#             user.refresh_from_db()
-#             username = form.cleaned_data.get('username')
-#             messages.success(request, f'Your account has been created! You are now able to log in')
-#             return redirect('login')
-#     else:
-#         form = UserRegisterForm()
-#     return render(request, 'register.html', {'form': form})
+                # create the payment
+                payment = Payment()
+                payment.user = self.request.user
+                payment.amount = order.get_total()
+                payment.save()
+
+                order_items = order.items.all()
+                order_items.update(ordered=True)
+                for item in order_items:
+                    item.save()
+
+                order.ordered = True
+                order.payment = payment
+                order.ref_code = create_ref_code()
+                order.save()
+
+                messages.success(self.request, "Your order was successful!")
+                return redirect("user:home")
+
+
+        except ObjectDoesNotExist:
+            messages.warning(self.request, "You do not have an active order")
+            return redirect("user:checkout")
+
 
 def register(request):
     if request.method == 'POST':
@@ -120,19 +216,6 @@ def remove_from_cart(request, slug):
     else:
         messages.info(request, "You do not have an active order")
         return redirect("user:product", slug=slug)
-
-
-
-
-# def home(request):
-#     my_dict = {'content':'Home page'}
-#     return render(request,'home.html',context = my_dict)
-
-# def products(request):
-#     context = {
-#         'items': Item.objects.all()
-#     }
-#     return render(request, "products.html", context)
 
 class HomeView(ListView):
     model = Item

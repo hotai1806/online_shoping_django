@@ -19,3 +19,69 @@
     </div>
   </div>
 {% endblock %}
+<form method="post">
+  <input type="hidden" name="csrfmiddlewaretoken" value="XEd0bE71itUKguCjPKsmgc1SDW1hrRqZu6KMiT8YdVvidcMQNmjiUIfmEry6eHQR">
+  <p><label for="id_shipping_address">Shipping address:</label> <input type="text" name="shipping_address" id="id_shipping_address"></p>
+<p><label for="id_name_profile">Name profile:</label> <input type="text" name="name_profile" id="id_name_profile"></p>
+<p><label for="id_numberphone">Numberphone:</label> <input type="text" name="numberphone" id="id_numberphone"></p>
+    <button type="submit">checkout</button>
+</form>
+<textarea name="shipping_address" cols="40" rows="10" required="" id="id_shipping_address"></textarea>
+
+<form method="post">
+    <input type="hidden" name="csrfmiddlewaretoken" value="pQeIBdJPjBI8SwnYll5HzG4Y856oWQQME3R6TJvPssC4kxykfaznEmEE2HssHMyK">
+<p><label for="id_shipping_address">Shipping address:</label> <input type="text" name="shipping_address" id="id_shipping_address"></p>
+<p><label for="id_name_profile">Name profile:</label> <input type="text" name="name_profile" id="id_name_profile"></p>
+<p><label for="id_numberphone">Numberphone:</label> <input type="text" name="numberphone" id="id_numberphone"></p>
+
+  <button type="submit">checkout </button>
+
+</form>
+
+  <button type="submit">checkout </button>
+
+</form>
+
+{% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    {% endfor %}
+{% endif %}
+
+{% for order_item in object.items.all %}
+        <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td>{{ order_item.item.title }}</td>
+            <td>{{ order_item.item.price }}</td>
+            <td>
+                <a href="{% url 'core:remove-single-item-from-cart' order_item.item.slug %}"><i class="fas fa-minus mr-2"></i></a>
+                {{ order_item.quantity }}
+                <a href="{% url 'core:add-to-cart' order_item.item.slug %}"><i class="fas fa-plus ml-2"></i></a>
+            </td>
+            <td>
+            {% if order_item.item.discount_price %}
+                ${{ order_item.get_total_discount_item_price }}
+                <span class="badge badge-primary">Saving ${{ order_item.get_amount_saved }}</span>
+            {% else %}
+                ${{ order_item.get_total_item_price }}
+            {% endif %}
+            <a style='color: red;' href="{% url 'core:remove-from-cart' order_item.item.slug %}">
+                <i class="fas fa-trash float-right"></i>
+            </a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan='5'>Your cart is empty</td>
+        </tr>
+        <tr>
+            <td colspan="5">
+            <a class='btn btn-primary float-right' href='/'>Continue shopping</a>
+            </td>
+        </tr>
+        {% endfor %}

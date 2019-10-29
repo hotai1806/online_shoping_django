@@ -7,11 +7,10 @@ from django.shortcuts import reverse
 # Create your models here.
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    name_profile = models.CharField(max_length=100)
     bio = models.TextField(max_length=500, blank=True)
-    location = models.CharField(max_length=30, blank=True)
-    stripe_customer_id = models.CharField(max_length=50, blank=True, null=True)
     one_click_purchasing = models.BooleanField(default=False)
-
+    numberphone = models.CharField(max_length=100)
     def __str__(self):
         return self.user.username
 
@@ -20,11 +19,11 @@ class Item(models.Model):
     title = models.CharField(max_length=100)
     price = models.FloatField()
     discount_price = models.FloatField(blank=True, null=True)
-    # category = models.CharField(choices=CATEGORY_CHOICES, max_length=2)
-    # label = models.CharField(choices=LABEL_CHOICES, max_length=1)
     slug = models.SlugField()
     description = models.TextField()
     image = models.ImageField()
+    image1 = models.ImageField()
+    image2 = models.ImageField()
 
     def __str__(self):
         return self.title
@@ -55,19 +54,8 @@ class OrderItem(models.Model):
     def __str__(self):
         return f"{self.quantity} of {self.item.title}"
 
-    def get_total_item_price(self):
-        return self.quantity * self.item.price
-
-    # def get_total_discount_item_price(self):
-    #     return self.quantity * self.item.discount_price
-
-    def get_amount_saved(self):
-        return self.get_total_item_price() - self.get_total_discount_item_price()
-
     def get_final_price(self):
-        if self.item.discount_price:
-            return self.get_total_discount_item_price()
-        return self.get_total_item_price()
+        return self.quantity * self.item.price
 
 
 class Order(models.Model):
@@ -80,25 +68,25 @@ class Order(models.Model):
     ordered = models.BooleanField(default=False)
     shipping_address = models.ForeignKey(
         'Address', related_name='shipping_address', on_delete=models.SET_NULL, blank=True, null=True)
-    billing_address = models.ForeignKey(
-        'Address', related_name='billing_address', on_delete=models.SET_NULL, blank=True, null=True)
     payment = models.ForeignKey(
         'Payment', on_delete=models.SET_NULL, blank=True, null=True)
-    # coupon = models.ForeignKey(
-    #     'Coupon', on_delete=models.SET_NULL, blank=True, null=True)
     being_delivered = models.BooleanField(default=False)
     received = models.BooleanField(default=False)
     refund_requested = models.BooleanField(default=False)
     refund_granted = models.BooleanField(default=False)
+    def __str__(self):
+        return self.user.username
+
+    def get_total(self):
+        total = 0
+        for order_item in self.items.all():
+            total += order_item.get_final_price()
+        return total
 
 class Address(models.Model):
     user = models.ForeignKey(User,
                              on_delete=models.CASCADE)
-    street_address = models.CharField(max_length=100)
-    apartment_address = models.CharField(max_length=100)
-    # country = CountryField(multiple=False)
-    zip = models.CharField(max_length=100)
-    # address_type = models.CharField(max_length=1, choices=ADDRESS_CHOICES)
+    street_address = models.TextField(max_length=500, blank=True)
     default = models.BooleanField(default=False)
 
     def __str__(self):
@@ -109,7 +97,6 @@ class Address(models.Model):
 
 
 class Payment(models.Model):
-    stripe_charge_id = models.CharField(max_length=50)
     user = models.ForeignKey(User,
                              on_delete=models.SET_NULL, blank=True, null=True)
     amount = models.FloatField()
@@ -117,15 +104,6 @@ class Payment(models.Model):
 
     def __str__(self):
         return self.user.username
-
-class Refund(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    reason = models.TextField()
-    accepted = models.BooleanField(default=False)
-    email = models.EmailField()
-
-    def __str__(self):
-        return f"{self.pk}"
 
 
 
@@ -146,14 +124,3 @@ def cart_item_count(user):
         if qs.exists():
             return qs[0].items.count()
     return 0
-
-
-# @receiver(post_save, sender=User)
-# def create_profile(sender, instance, created, **kwargs):
-#     if created:
-#         Profile.objects.create(user=instance)
-#
-#
-# @receiver(post_save, sender=User)
-# def save_profile(sender, instance, **kwargs):
-#     instance.profile.save()
