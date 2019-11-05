@@ -9,6 +9,7 @@ from .forms import UserRegisterForm, CheckoutForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login
 from .models import Item , OrderItem, Order, Profile, Address, Payment
+from django.views.generic.detail import SingleObjectMixin
 
 import random
 import string
@@ -172,7 +173,7 @@ def add_to_cart(request, slug):
             order_item.quantity += 1
             order_item.save()
             messages.info(request, "This item quantity was updated.")
-            return redirect("user:product",slug = slug)
+            return redirect("user:checkout")
         else:
             order.items.add(order_item)
             messages.info(request, "This item was added to your cart.")
@@ -207,9 +208,8 @@ def remove_from_cart(request, slug):
                 order_item.save()
             else:
                 order.items.remove(order_item)
-            order.items.remove(order_item)
             messages.info(request, "This item was removed from your cart.")
-            return redirect("user:product", slug=slug)
+            return redirect("user:checkout")
         else:
             messages.info(request, "This item was not in your cart")
             return redirect("user:product", slug=slug)
@@ -217,11 +217,37 @@ def remove_from_cart(request, slug):
         messages.info(request, "You do not have an active order")
         return redirect("user:product", slug=slug)
 
+
+class Account(DetailView):
+    """docstring for Account."""
+    model = Profile
+    def get(self, *args, **kwargs):
+
+        order = Order.objects.filter(user=self.request.user, ordered=True)
+        payment = Payment.objects.filter(user = self.request.user)
+        context = {
+            'order':order,
+            'payment':payment,
+
+
+        }
+        template_name = "account.html"
+        return render(self.request,'account.html' ,context)
+    # def get_object(self):
+    #     return get_object_or_404(User, slug = self.request.user)
+    # def get_object(self):
+    #     """Return's the current users profile."""
+    #     return self.request.user.username
+
+
 class HomeView(ListView):
+    #this class return for home site
     model = Item
     paginate_by = 10
     template_name = "home.html"
 
 class ItemDetailView(DetailView):
+    #this class return for product site
+    #model la nhung thu ma product site nay duoc cung cap boi model.py
     model = Item
     template_name = "product.html"

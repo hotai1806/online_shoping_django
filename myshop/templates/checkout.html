@@ -21,9 +21,15 @@
      <!----start-top-nav---->
      <div class="top-nav">
        <ul>
-         <li><a href="/user:home/" class="scroll">Home</a></li>
-         <li><a href="#">My account</a></li>
-         <li><a href="#"><span>shopping cart: 0</span></a></li>
+         <li><a href="/" class="scroll">Home</a></li>
+         <li>
+         {% if user.is_authenticated %}
+            <a href="{% url 'user:account'  %}">{{ user.username }}</a> </li>
+             <!-- <li><a href="{% url 'logout' %}"> logout</a> </li> -->
+           {% else %}
+       <li>	  <a href="{% url 'register' %}">register</a></li>
+         {% endif %}
+         <li><a href="#"><span>cart</span></a></li>
        </ul>
      </div>
      <div class="clear"> </div>
@@ -53,12 +59,17 @@
              </div>
 
              <div class="quantity">
-               <button class="plus-btn" type="button" name="button">
-                 <img src="images/plus.svg" alt="" />
+               <button type="button" name="button">
+
+                <a href="{% url 'user:add-to-cart' order_item.item.slug %}"> <img src="{% static 'img/plus.svg' %}" alt="" /> </a>
                </button>
+
+
                <span>{{ order_item.quantity }}</span>
-               <button class="minus-btn" type="button" name="button">
-                 <img src="images/minus.svg" alt="" />
+               <button type="button" name="button">
+                   <a href="{% url 'user:remove-from-cart' order_item.item.slug %}">
+                 <img src="{% static 'img/minus.svg' %}" alt="" />
+          </a>
                </button>
              </div>
 
@@ -136,9 +147,9 @@
          </form>
          <h3>Follow Us:</h3>
          <ul>
-           <li><a href="#"><img src="images/twitter.png" title="twitter" />Twitter</a></li>
-           <li><a href="#"><img src="images/facebook.png" title="Facebook" />Facebook</a></li>
-           <li><a href="#"><img src="images/rss.png" title="Rss" />Rss</a></li>
+           <li><a href="#"><img src="{% static 'img/twitter.png' %}" title="twitter" />Twitter</a></li>
+           <li><a href="#"><img src="{% static 'img/facebook.png' %}" title="Facebook" />Facebook</a></li>
+           <li><a href="#"><img src="{% static 'img/rss.png' %}" title="Rss" />Rss</a></li>
          </ul>
        </div>
      </div>
