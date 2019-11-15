@@ -5,8 +5,10 @@
     <meta charset="utf-8">
     <title>{% block title %}Simple is Better Than Complex{% endblock %}</title>
     <link rel="stylesheet" type="text/css" href="{% static 'css/StoreStyle.css' %}">
-    <link rel="stylesheet" type="text/JavaScript" href="{% static 'js/jquery.min.js' %}">
-    <link rel="stylesheet" type="text/JavaScript" href="{% static 'js/jquery.livequery.js' %}">
+    <!-- <link rel="stylesheet" type="text/JavaScript" href="{% static 'js/jquery.min.js' %}">
+    <link rel="stylesheet" type="text/JavaScript" href="{% static 'js/jquery.livequery.js' %}"> -->
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/jquery.livequery.js' %}"></script>
 </head>
 
 <body>
@@ -37,9 +39,62 @@
 	</div>
 
 {% block extrabody %}
-
+<div class="clear"> </div>
   <div class="wrap">
 		<div class="content">
+      <style>
+.alert {
+ padding: 20px;
+ background-color: #f44336;
+ color: white;
+ opacity: 1;
+ transition: opacity 0.6s;
+ margin-bottom: 15px;
+}
+
+.alert.success {background-color: #4CAF50;}
+.alert.info {background-color: #2196F3;}
+.alert.warning {background-color: #ff9800;}
+
+.closebtn {
+ margin-left: 15px;
+ color: white;
+ font-weight: bold;
+ float: right;
+ font-size: 22px;
+ line-height: 20px;
+ cursor: pointer;
+ transition: 0.3s;
+}
+
+.closebtn:hover {
+ color: black;
+}
+
+</style>
+
+ {% if messages %}
+      <div class="alert info" >
+             {% for message in messages %}
+             <span class="closebtn">&times;</span>
+               {{ message }}
+             {% endfor %}
+
+         </div>
+         <script>
+         var close = document.getElementsByClassName("closebtn");
+         var i;
+
+         for (i = 0; i < close.length; i++) {
+           close[i].onclick = function(){
+             var div = this.parentElement;
+             div.style.opacity = "0";
+             setTimeout(function(){ div.style.display = "none"; }, 600);
+           }
+         }
+         </script>
+         {% endif %}
+
 			<div class="content-grids">
 
 				<div id="wrap">
@@ -51,7 +106,8 @@
 
             <li id = "i" >
               <a href="{{ item.get_absolute_url }}">
-              <img height="30%" width="60%" src="{{ item.image.url }}" class="items" alt="" />
+              <img height="180" width="170" src="{{ item.image.url }}" class="items" alt="" />
+              </a>
               <br clear="all" />
               <div>{{ item.title }}</div>
               <script>

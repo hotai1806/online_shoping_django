@@ -5,7 +5,7 @@ from django.views.generic import ListView, DetailView, View
 # Create your views here.
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegisterForm, CheckoutForm
+from .forms import UserRegisterForm, CheckoutForm, AccountForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login
 from .models import Item , OrderItem, Order, Profile, Address, Payment
@@ -36,9 +36,12 @@ class CheckoutView(View):
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
             form = CheckoutForm()
+            profile = Profile.objects.get(user=self.request.user)
             context = {
                 'form': form,
                 'order': order,
+                'profile': profile,
+
             }
 
             shipping_address_qs = Address.objects.filter(
@@ -225,14 +228,34 @@ class Account(DetailView):
 
         order = Order.objects.filter(user=self.request.user, ordered=True)
         payment = Payment.objects.filter(user = self.request.user)
+        form = AccountForm()
         context = {
             'order':order,
             'payment':payment,
-
+            'form':form,
 
         }
         template_name = "account.html"
         return render(self.request,'account.html' ,context)
+    def post(self, *args, **kwargs):
+        form = AccountForm(self.request.POST or None)
+        try:
+            userprofile = Profile.objects.get(user=self.request.user)
+            userprofile.name_profile = form.cleaned_data.get('name_profile')
+            userprofile.numberphone = form.cleaned_data.get('numberphone')
+            userprofile.save()
+
+            shipping_address1 = form.cleaned_data.get(
+                'shipping_address')
+            shipping_address = Address(
+                user=self.request.user,
+                street_address=shipping_address1,
+            )
+            shipping_address.save()
+        except ObjectDoesNotExist:
+            messages.warning(self.request, "You do not have an profile")
+            return redirect('account.html')
+
     # def get_object(self):
     #     return get_object_or_404(User, slug = self.request.user)
     # def get_object(self):
