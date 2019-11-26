@@ -19,6 +19,7 @@ class CheckoutForm(forms.Form):
 class AccountForm(forms.Form):
     name_profile = forms.CharField(required=False)
     numberphone = forms.CharField(required=False)
+    card_number = forms.CharField(required=False)
     shipping_address = forms.CharField(widget=forms.Textarea)
 
 

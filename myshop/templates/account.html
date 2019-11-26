@@ -85,6 +85,9 @@
 				 }
 				 </script>
 				 {% endif %}
+			<div class="">
+				<span> So tien hien tai:</span> <span> {{wallet.current_money }}</span>
+			</div>
 			<div class="section group">
 				<div class="col span_2_of_3">
 					<div class="contact-form">
@@ -92,12 +95,16 @@
 							{% csrf_token %}
 							<div>
 								<span><label for="id_name_profile">Name</label></span>
-								<span><input value="{{ order.user }} " type="text" name="name_profile" id="id_name_profile"> </span>
+								<span><input value="{{ profile.name_profile }} " type="text" name="name_profile" id="id_name_profile"> </span>
 							</div>
 
 							<div>
 								<span><label for="id_numberphone">Numberphone</label></span>
 								<span><input value="{{ profile.numberphone }}" type="text" name="numberphone" id="id_numberphone"></span>
+							</div>
+							<div>
+								<span><label for="id_card_number">Card Number</label></span>
+								<span><input value="{{ wallet.card_number }}" type="text" name="card_number" id="id_card_number"></span>
 							</div>
 							<div>
 								<span><label for="id_shipping_address">Address </label></span>

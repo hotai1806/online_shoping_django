@@ -8,7 +8,6 @@ from django.shortcuts import reverse
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     name_profile = models.CharField(max_length=100)
-    bio = models.TextField(max_length=500, blank=True)
     one_click_purchasing = models.BooleanField(default=False)
     numberphone = models.CharField(max_length=100)
     def __str__(self):
@@ -22,8 +21,7 @@ class Item(models.Model):
     slug = models.SlugField()
     description = models.TextField()
     image = models.ImageField()
-    image1 = models.ImageField()
-    image2 = models.ImageField()
+
 
     def __str__(self):
         return self.title
@@ -70,10 +68,7 @@ class Order(models.Model):
         'Address', related_name='shipping_address', on_delete=models.SET_NULL, blank=True, null=True)
     payment = models.ForeignKey(
         'Payment', on_delete=models.SET_NULL, blank=True, null=True)
-    being_delivered = models.BooleanField(default=False)
-    received = models.BooleanField(default=False)
-    refund_requested = models.BooleanField(default=False)
-    refund_granted = models.BooleanField(default=False)
+
     def __str__(self):
         return self.user.username
 
@@ -104,6 +99,13 @@ class Payment(models.Model):
 
     def __str__(self):
         return self.user.username
+
+
+class Wallet(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    card_number = models.IntegerField(default= 0)
+    current_money = models.FloatField(blank=True, null=True)
+
 
 
 

@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import UserRegisterForm, CheckoutForm, AccountForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login
-from .models import Item , OrderItem, Order, Profile, Address, Payment
+from .models import Item , OrderItem, Order, Profile, Address, Payment, Wallet
 from django.views.generic.detail import SingleObjectMixin
 
 import random
@@ -37,10 +37,12 @@ class CheckoutView(View):
             order = Order.objects.get(user=self.request.user, ordered=False)
             form = CheckoutForm()
             profile = Profile.objects.get(user=self.request.user)
+            wallet = Wallet.objects.get(user = self.request.user)
             context = {
                 'form': form,
                 'order': order,
                 'profile': profile,
+                'wallet':wallet,
 
             }
 
@@ -62,6 +64,7 @@ class CheckoutView(View):
             userprofile = Profile.objects.get(user=self.request.user)
             order = Order.objects.get(user=self.request.user, ordered=False)
             if form.is_valid():
+
 
                 use_default_shipping = form.cleaned_data.get(
                     'use_default_shipping')
@@ -108,22 +111,29 @@ class CheckoutView(View):
                 userprofile.numberphone = form.cleaned_data.get('numberphone')
                 userprofile.save()
 
-
+                wallet = Wallet.objects.get(user = self.request.user)
+                if wallet.current_money < order.get_total():
+                    messages.success(self.request, "You don't have enough money!")
+                    return redirect("user:home")
+                else:
                 # create the payment
-                payment = Payment()
-                payment.user = self.request.user
-                payment.amount = order.get_total()
-                payment.save()
+                    payment = Payment()
+                    payment.user = self.request.user
+                    payment.amount = order.get_total()
+                    wallet.current_money -= payment.amount
+                    wallet.save()
+                    payment.save()
 
-                order_items = order.items.all()
-                order_items.update(ordered=True)
-                for item in order_items:
-                    item.save()
+                    order_items = order.items.all()
+                    order_items.update(ordered=True)
+                    for item in order_items:
+                        item.save()
 
-                order.ordered = True
-                order.payment = payment
-                order.ref_code = create_ref_code()
-                order.save()
+                    order.ordered = True
+                    order.payment = payment
+                    order.ref_code = create_ref_code()
+                    order.save()
+
 
                 messages.success(self.request, "Your order was successful!")
                 return redirect("user:home")
@@ -225,14 +235,18 @@ class Account(DetailView):
     """docstring for Account."""
     model = Profile
     def get(self, *args, **kwargs):
+        profile = Profile.objects.get(user=self.request.user)
 
         order = Order.objects.filter(user=self.request.user, ordered=True)
         payment = Payment.objects.filter(user = self.request.user)
+        wallet = Wallet.objects.get(user = self.request.user)
         form = AccountForm()
         context = {
             'order':order,
             'payment':payment,
             'form':form,
+            'wallet':wallet,
+            'profile': profile,
 
         }
         template_name = "account.html"
@@ -243,7 +257,11 @@ class Account(DetailView):
             userprofile = Profile.objects.get(user=self.request.user)
             userprofile.name_profile = form.cleaned_data.get('name_profile')
             userprofile.numberphone = form.cleaned_data.get('numberphone')
+
             userprofile.save()
+            wallet = Wallet.objects.get(user = self.request.user)
+            wallet.card_number = form.cleaned_data.get('card_number')
+            wallet.save()
 
             shipping_address1 = form.cleaned_data.get(
                 'shipping_address')
